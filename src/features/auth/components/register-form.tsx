@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-// import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
 const registerSchema = z.object({
@@ -38,7 +38,23 @@ export const RegisterForm = () => {
     });
 
     const onSubmit = async (values: RegisterFormValues) => {
-        console.log(values);
+        console.log({values});
+        await authClient.signUp.email(
+            {
+                name: values.email,
+                email: values.email,
+                password: values.password,
+                callbackURL: "/",
+            },
+            {
+                onSuccess: () => {
+                    router.push("/");
+                },
+                onError: (ctx) => {
+                    toast.error(ctx.error.message);
+                }
+            }
+        )
     };
 
     const isPending = form.formState.isSubmitting;
@@ -131,7 +147,7 @@ export const RegisterForm = () => {
                                         className="w-full"
                                         disabled={isPending}
                                     >
-                                        Login
+                                        Sign Up
                                     </Button>
                                 </div>
 

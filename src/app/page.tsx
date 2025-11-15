@@ -1,13 +1,30 @@
-import { Button } from "@/components/ui/button";
-import { caller } from "@/trpc/server";
+"use client";
 
-const Page = async () => {
-  const users = await caller.getUsers();
+import { useState, useEffect } from "react";
+import { authClient } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
+
+const Page = () => {
+  const [session, setSession] = useState<{ user: any; session: any } | null>(null);
+
+  useEffect(() => {
+    authClient.getSession().then(({ data }) => {
+      setSession(data);
+    });
+  }, []);
+
+  const handleLogout = async () => {
+    await authClient.signOut();
+  }
 
   return (
     <div className="min-h-screen min-w-screen flex items-center justify-center">
-      <Button>Click me</Button>
-      {JSON.stringify(users)}
+      {JSON.stringify(session)}
+      {session && (
+        <Button onClick={handleLogout}>
+          Logout
+        </Button>
+      )}
     </div>
   )
 };
