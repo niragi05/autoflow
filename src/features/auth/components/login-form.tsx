@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-// import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
 const loginSchema = z.object({
@@ -33,7 +33,19 @@ export const LoginForm = () => {
     });
 
     const onSubmit = async (values: LoginFormValues) => {
-        console.log(values);
+        await authClient.signIn.email({
+            email: values.email,
+            password: values.password,
+            callbackURL: "/",
+        }, {
+            onSuccess: () => {
+                router.push("/");
+                toast.success("Logged in successfully!");
+            },
+            onError: (ctx) => {
+                toast.error(ctx.error.message || "An error occurred while logging in.");
+            }
+        })
     };
 
     const isPending = form.formState.isSubmitting;

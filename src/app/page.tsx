@@ -1,30 +1,17 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
+import { requireAuth } from "@/lib/auth-utils";
+import { caller } from "@/trpc/server";
+import { Logout } from "./logout";
 
-const Page = () => {
-  const [session, setSession] = useState<{ user: any; session: any } | null>(null);
-
-  useEffect(() => {
-    authClient.getSession().then(({ data }) => {
-      setSession(data);
-    });
-  }, []);
-
-  const handleLogout = async () => {
-    await authClient.signOut();
-  }
+const Page = async () => {
+  await requireAuth();
+  const data = await caller.getUsers();
 
   return (
-    <div className="min-h-screen min-w-screen flex items-center justify-center">
-      {JSON.stringify(session)}
-      {session && (
-        <Button onClick={handleLogout}>
-          Logout
-        </Button>
-      )}
+    <div className="min-h-screen min-w-screen flex items-center justify-center flex-col gap-4">
+      <h1>Hello World</h1>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+      <Logout />
     </div>
   )
 };

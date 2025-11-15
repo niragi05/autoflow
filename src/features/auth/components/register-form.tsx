@@ -49,9 +49,10 @@ export const RegisterForm = () => {
             {
                 onSuccess: () => {
                     router.push("/");
+                    toast.success("Account created successfully!");
                 },
                 onError: (ctx) => {
-                    toast.error(ctx.error.message);
+                    toast.error(ctx.error.message || "An error occurred while creating your account.");
                 }
             }
         )
