@@ -23,8 +23,22 @@ const Page = () => {
     }
   }));
 
+  const testAi = useMutation(trpc.testAi.mutationOptions({
+    onSuccess: (data) => {
+      toast.success("AI test successful!");
+      console.log(data);
+    },
+    onError: (error) => {
+      toast.error(error.message || "An error occurred while testing AI.");
+    }
+  }));
+
   const handleCreate = () => {
     create.mutate();
+  }
+
+  const handleTestAi = () => {
+    testAi.mutate();
   }
 
   return (
@@ -32,6 +46,7 @@ const Page = () => {
       <h1>Hello World</h1>
       <div>{JSON.stringify(data, null, 2)}</div>
       <Button onClick={handleCreate} disabled={create.isPending}>Create Workflow</Button>
+      <Button onClick={handleTestAi} disabled={testAi.isPending}>Test AI</Button>
       <Logout />
     </div>
   )
