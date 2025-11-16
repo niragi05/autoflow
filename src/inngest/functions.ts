@@ -16,6 +16,11 @@ export const execute = inngest.createFunction(
         model: google("gemini-2.5-flash"),
         system: "You are a helpful assistant that can generate text.",
         prompt: "What is 2 + 2 ??. Return the answer in a JSON object with the key 'answer' and the value being the answer.",
+        experimental_telemetry: {
+          isEnabled: true,
+          recordInputs: true,
+          recordOutputs: true,
+        },
       }
     )
 
