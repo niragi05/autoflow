@@ -6,12 +6,11 @@ import { generateText } from 'ai';
 
 export const appRouter = createTRPCRouter({
 	testAi: protectedProcedure.mutation(async () => {
-		const { text } = await generateText({
-			model: google("gemini-2.5-flash"),
-			prompt: "Write a recipe to make protein bagels.",
-		})
+		await inngest.send({
+			name: "execute/ai",
+		});
 
-		return text;
+		return { success: true, message: "Job queued" }
 	}),
 	getWorkflows: protectedProcedure.query(({ ctx }) => {
 		console.log(ctx.auth);
