@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Autoflow",
   description: "AI-powered workflow automation",
+  icons: {
+    icon: '/logos/logo.svg',
+  },
 };
 
 export default function RootLayout({
