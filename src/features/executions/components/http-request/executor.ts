@@ -2,9 +2,9 @@ import type { NodeExecutor } from "@/features/executions/types";
 import { NonRetriableError } from "inngest";
 
 type HttpRequestData = {
-    variableName?: string;
-    endpoint?: string;
-    method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+    variableName: string;
+    endpoint: string;
+    method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
     body?: string;
 };
 
@@ -18,17 +18,22 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
 
     if (!data.endpoint) {
         // TODO: Publish "error" state for http request
-        throw new NonRetriableError("HTTP Request node: No endpoint provided");
+        throw new NonRetriableError("HTTP Request node: Endpoint not configured :/");
     }
 
     if (!data.variableName) {
         // TODO: Publish "error" state for http request
-        throw new NonRetriableError("Variable Name not configured :/");
+        throw new NonRetriableError("HTTP Request node: Variable Name not configured :/");
+    }
+
+    if (!data.method) {
+        // TODO: Publish "error" state for http request
+        throw new NonRetriableError("HTTP Request node: Method not configured :/");
     }
 
     const result = await step.run("http-request", async () => {
-        const endpoint = data.endpoint!;
-        const method = data.method || "GET";
+        const endpoint = data.endpoint;
+        const method = data.method;
 
         const options: RequestInit = { method };
 
@@ -51,16 +56,9 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
             },
         }
 
-        if (data.variableName) {
-            return {
-                ...context,
-                [data.variableName]: responsePayload,
-            }
-        } else {
-            return {
-                ...context,
-                ...responsePayload,
-            }
+        return {
+            ...context,
+            [data.variableName]: responsePayload,
         }
     })
 
