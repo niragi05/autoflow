@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 const formSchema = z.object({
+    variableName: z.string().min(1, { message: "Variable name is required" }).regex(/^[A-Za-z_$][A-Za-z0-9_$]*$/, { message: "Variable name must start with a letter and contain only letters, numbers, and underscores" }),
     endpoint: z.url({ message: "Please enter a valid URL" }),
     method: z.enum(["GET", "POST", "PUT", "DELETE", "PATCH"]),
     body: z.string().optional()
@@ -32,6 +33,7 @@ export const HttpRequestDialog = ({ open, onOpenChange, onSubmit, defaultValues 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            variableName: defaultValues.variableName || "",
             endpoint: defaultValues.endpoint || "",
             method: defaultValues.method || "GET",
             body: defaultValues.body || "",
@@ -42,6 +44,7 @@ export const HttpRequestDialog = ({ open, onOpenChange, onSubmit, defaultValues 
     useEffect(() => {
         if (open) {
             form.reset({
+                variableName: defaultValues.variableName || "",
                 endpoint: defaultValues.endpoint || "",
                 method: defaultValues.method || "GET",
                 body: defaultValues.body || "",
@@ -68,6 +71,22 @@ export const HttpRequestDialog = ({ open, onOpenChange, onSubmit, defaultValues 
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8 mt-4">
+                    <FormField 
+                            control={form.control}
+                            name="endpoint"
+                            render={({field}) => (
+                                <FormItem>
+                                    <FormLabel>Endpoint URL</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} placeholder="https://api.example.com/users/{{httpResponse.data.id}}" />
+                                    </FormControl>
+                                    <FormDescription>
+                                        Static URL or use {"{{variables}}"} for simpler values or {"{{json variable}}"} to stringify objects.
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         <FormField 
                             control={form.control}
                             name="method"

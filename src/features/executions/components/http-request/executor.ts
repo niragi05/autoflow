@@ -28,6 +28,9 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
 
         if (method === "POST" || method === "PUT" || method === "PATCH") {
             options.body = data.body;
+            options.headers = {
+                "Content-Type": "application/json",
+            }
         }
 
         const response = await fetch(endpoint, options);
