@@ -52,6 +52,7 @@ export const HttpRequestDialog = ({ open, onOpenChange, onSubmit, defaultValues 
         }
 }, [open, defaultValues, form]);
 
+    const watchVariableName = form.watch("variableName") || "myApiCall";
     const watchMethod = form.watch("method");
     const showBodyField = ["POST", "PUT", "PATCH"].includes(watchMethod);
 
@@ -73,15 +74,15 @@ export const HttpRequestDialog = ({ open, onOpenChange, onSubmit, defaultValues 
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8 mt-4">
                     <FormField 
                             control={form.control}
-                            name="endpoint"
+                            name="variableName"
                             render={({field}) => (
                                 <FormItem>
-                                    <FormLabel>Endpoint URL</FormLabel>
+                                    <FormLabel>Variable Name</FormLabel>
                                     <FormControl>
-                                        <Input {...field} placeholder="https://api.example.com/users/{{httpResponse.data.id}}" />
+                                        <Input {...field} placeholder="myApiCall" />
                                     </FormControl>
                                     <FormDescription>
-                                        Static URL or use {"{{variables}}"} for simpler values or {"{{json variable}}"} to stringify objects.
+                                        Use this name to reference the result in other nodes: {" "}{`{{${watchVariableName}.httpResponse.data}}`}
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>

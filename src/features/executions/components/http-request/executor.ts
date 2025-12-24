@@ -2,6 +2,7 @@ import type { NodeExecutor } from "@/features/executions/types";
 import { NonRetriableError } from "inngest";
 
 type HttpRequestData = {
+    variableName?: string;
     endpoint?: string;
     method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
     body?: string;
@@ -17,7 +18,12 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
 
     if (!data.endpoint) {
         // TODO: Publish "error" state for http request
-        throw new NonRetriableError("HTTP Request node: No endpoint provided")
+        throw new NonRetriableError("HTTP Request node: No endpoint provided");
+    }
+
+    if (!data.variableName) {
+        // TODO: Publish "error" state for http request
+        throw new NonRetriableError("Variable Name not configured :/");
     }
 
     const result = await step.run("http-request", async () => {
@@ -37,12 +43,23 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
         const contentType = response.headers.get("content-type");
         const responseData = contentType?.includes("application/json") ? await response.json() : await response.text();
 
-        return {
-            ...context,
+        const responsePayload = {
             httpResponse: {
                 status: response.status,
                 statusText: response.statusText,
                 data: responseData,
+            },
+        }
+
+        if (data.variableName) {
+            return {
+                ...context,
+                [data.variableName]: responsePayload,
+            }
+        } else {
+            return {
+                ...context,
+                ...responsePayload,
             }
         }
     })
