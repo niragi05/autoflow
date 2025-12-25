@@ -6,6 +6,7 @@ import { Node, Edge } from "@xyflow/react";
 import { PAGINATION } from "@/config/constants";
 import { NodeType } from "@/generated/prisma/enums";
 import { inngest } from "@/inngest/client";
+import { sendInngestWorkflowExecution } from "@/inngest/utils";
 
 export const workflowsRouter = createTRPCRouter({
     execute: protectedProcedure
@@ -20,9 +21,8 @@ export const workflowsRouter = createTRPCRouter({
                 }
             })
 
-            await inngest.send({
-                name: "workflows/execute.workflow",
-                data: { workflowId: input.id }
+            await sendInngestWorkflowExecution({
+                workflowId: input.id,
             })
 
             return workflow;
@@ -64,7 +64,7 @@ export const workflowsRouter = createTRPCRouter({
             nodes: z.array(
                 z.object({
                     id: z.string(),
-                    type: z.string().nullish(),
+                    type: z.nativeEnum(NodeType),
                     position: z.object({ x: z.number(), y: z.number() }),
                     data: z.record(z.string(), z.any()).optional(),
                 })
@@ -100,8 +100,8 @@ export const workflowsRouter = createTRPCRouter({
                     data: nodes.map((node) => ({
                         id: node.id,
                         workflowId: id,
-                        name: node.type || 'Unknown',
-                        type: node.type as NodeType,
+                        name: node.type,
+                        type: node.type,
                         position: node.position,
                         data: node.data || {},
                     }))
