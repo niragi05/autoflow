@@ -12,10 +12,8 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 export const AVAILABLE_MODELS = [
-    "gemini-2.0-flash",
-    "gemini-2.0-pro-exp-02-05",
-    "gemini-2.5-flash",
-    "gemini-2.5-pro"
+    "gpt-4",
+    "gpt-4o-mini",
 ]
 
 const formSchema = z.object({
@@ -25,16 +23,16 @@ const formSchema = z.object({
     userPrompt: z.string().min(1, { message: "User prompt is required" }),
 })
 
-export type GeminiFormValues = z.infer<typeof formSchema>;
+export type OpenAIFormValues = z.infer<typeof formSchema>;
 
 interface Props {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSubmit: (values: z.infer<typeof formSchema>) => void;
-    defaultValues?: Partial<GeminiFormValues>;
+    defaultValues?: Partial<OpenAIFormValues>;
 }
 
-export const GeminiDialog = ({ open, onOpenChange, onSubmit, defaultValues = {} }: Props) => {
+export const OpenAIDialog = ({ open, onOpenChange, onSubmit, defaultValues = {} }: Props) => {
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -58,7 +56,7 @@ export const GeminiDialog = ({ open, onOpenChange, onSubmit, defaultValues = {} 
         }
 }, [open, defaultValues, form]);
 
-    const watchVariableName = form.watch("variableName") || "myGemini";
+    const watchVariableName = form.watch("variableName") || "myOpenAI";
 
     const handleSubmit = (values: z.infer<typeof formSchema>) => {
         onSubmit(values);
@@ -69,7 +67,7 @@ export const GeminiDialog = ({ open, onOpenChange, onSubmit, defaultValues = {} 
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Gemini Configuration</DialogTitle>
+                    <DialogTitle>OpenAI Configuration</DialogTitle>
                     <DialogDescription>
                         Configure the AI model and prompt for this node.
                     </DialogDescription>
@@ -83,7 +81,7 @@ export const GeminiDialog = ({ open, onOpenChange, onSubmit, defaultValues = {} 
                                 <FormItem>
                                     <FormLabel>Variable Name</FormLabel>
                                     <FormControl>
-                                        <Input {...field} placeholder="myGemini" />
+                                        <Input {...field} placeholder="myOpenAI" />
                                     </FormControl>
                                     <FormDescription>
                                         Use this name to reference the result in other nodes: {" "}{`{{${watchVariableName}.aiResponse.text}}`}
