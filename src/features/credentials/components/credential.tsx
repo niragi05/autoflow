@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import Link from "next/link";
 
 const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -43,7 +43,7 @@ const credentialTypeOptions = [
 
 interface CredentialFormProps {
     initialData?: {
-        id?: string;
+        id?: string; 
         name: string;
         type: CredentialType;
         value: string;
@@ -61,9 +61,9 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: "",
-            type: CredentialType.GEMINI,
-            value: "",
+            name: initialData?.name || "",
+            type: initialData?.type || CredentialType.GEMINI,
+            value: initialData?.value || "",
         }
     })
 
@@ -73,10 +73,11 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                 id: initialData.id,
                 ...values,
             })
+            router.push(`/credentials`);
         } else {
             await createCredential.mutateAsync(values, {
                 onSuccess: () => {
-                    toast.success("Credential created successfully!");
+                    router.push("/credentials");
                 },
                 onError: (error) => {
                     handleError(error);
@@ -93,19 +94,19 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                 </CardTitle>
                 <CardDescription>
                     {
-                        isEditing ? 
-                        "Update your API key or credential details" :
-                        "Add a new API key or credential to your account"
+                        isEditing ?
+                            "Update your API key or credential details" :
+                            "Add a new API key or credential to your account"
                     }
                 </CardDescription>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                        <FormField 
+                        <FormField
                             control={form.control}
                             name="name"
-                            render={({field}) => (
+                            render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Name</FormLabel>
                                     <FormControl>
@@ -115,10 +116,10 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                                 </FormItem>
                             )}
                         />
-                        <FormField 
+                        <FormField
                             control={form.control}
                             name="type"
-                            render={({field}) => (
+                            render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Type</FormLabel>
                                     <Select
@@ -133,15 +134,15 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                                         <SelectContent>
                                             {credentialTypeOptions.map((option) => (
                                                 <SelectItem
-                                                key={option.value}
-                                                value={option.value}
+                                                    key={option.value}
+                                                    value={option.value}
                                                 >
                                                     <div className="flex items-center gap-2">
-                                                        <Image 
-                                                            src={option.logo} 
-                                                            alt={option.label} 
-                                                            width={16} 
-                                                            height={16} 
+                                                        <Image
+                                                            src={option.logo}
+                                                            alt={option.label}
+                                                            width={16}
+                                                            height={16}
                                                         />
                                                         {option.label}
                                                     </div>
@@ -153,10 +154,10 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                                 </FormItem>
                             )}
                         />
-                        <FormField 
+                        <FormField
                             control={form.control}
                             name="value"
-                            render={({field}) => (
+                            render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>API Key</FormLabel>
                                     <FormControl>
@@ -172,13 +173,21 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                                     isEditing ? "Update Credential" : "Create Credential"
                                 }
                             </Button>
-                            <Button type="button" variant="outline" onClick={() => router.push("/credentials")} disabled={createCredential.isPending || updateCredential.isPending}>
-                                Cancel
+                            <Button type="button" variant="outline" asChild disabled={createCredential.isPending || updateCredential.isPending}>
+                                <Link href="/credentials" prefetch>Cancel</Link>
                             </Button>
                         </div>
                     </form>
                 </Form>
             </CardContent>
         </Card>
+    )
+}
+
+export const CredentialView = ({ credentialId }: { credentialId: string }) => {
+    const { data: credential } = useSuspenseCredential(credentialId);
+
+    return (
+        <CredentialForm initialData={credential} />
     )
 }

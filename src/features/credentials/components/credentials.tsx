@@ -7,8 +7,24 @@ import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
 import { useRouter } from "next/navigation";
 import { useCredentialsParams } from "../hooks/use-credentials-params";
 import { useEntitySearch } from "@/hooks/use-entity-search";
-import type { CredentialModel as Credential } from "@/generated/prisma/models";
+import { CredentialType } from "@/generated/prisma/enums";
 import { KeyIcon } from "lucide-react";
+import Image from "next/image";
+
+// Type matching the API response from getMany endpoint
+type CredentialListItem = {
+    id: string;
+    name: string;
+    type: CredentialType;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+const credentialLogos: Record<CredentialType, string> = {
+    [CredentialType.GEMINI]: "/logos/gemini.svg",
+    [CredentialType.OPENAI]: "/logos/openai.svg",
+    [CredentialType.ANTHROPIC]: "/logos/anthropic.svg",
+}
 
 export const CredentialsSearch = () => {
     const [params, setParams] = useCredentialsParams();
@@ -33,7 +49,7 @@ export const CredentialsList = () => {
         <EntityList 
             items={credentials.data.items}
             getKey={(credential) => credential.id}
-            renderItem={(credential) => <CredentialItem data={credential} />}
+            renderItem={(credential: CredentialListItem) => <CredentialItem data={credential} />}
             emptyView={<CredentialsEmpty />}
         />
     )
@@ -100,12 +116,14 @@ export const CredentialsEmpty = () => {
     )
 }
 
-export const CredentialItem = ({data}: {data: Credential}) => {
+export const CredentialItem = ({data}: {data: CredentialListItem}) => {
     const removeCredential = useRemoveCredential();
 
     const handleRemove = () => {
         removeCredential.mutate({ id: data.id })
     }
+
+    const logo = credentialLogos[data.type];
 
     return (
         <EntityItem 
@@ -120,7 +138,7 @@ export const CredentialItem = ({data}: {data: Credential}) => {
             }
             image={
                 <div className="size-8 flex items-center justify-center">
-                    <KeyIcon className="size-5 text-muted-foreground" />
+                    <Image src={logo} alt={data.type} width={20} height={20} />
                 </div>
             }
             onRemove={handleRemove}

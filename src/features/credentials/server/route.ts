@@ -82,6 +82,7 @@ export const credentialsRouter = createTRPCRouter({
                     type: true,
                     createdAt: true,
                     updatedAt: true,
+                    value: true,
                 }
             })
         }),
