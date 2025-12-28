@@ -12,6 +12,7 @@ import { openaiChannel } from "./channels/openai";
 import { anthropicChannel } from "./channels/anthropic";
 import { NonRetriableError } from "inngest";
 import { discordChannel } from "./channels/discord";
+import { slackChannel } from "./channels/slack";
 
 export const executeWorkflow = inngest.createFunction(
 	{ 
@@ -29,6 +30,7 @@ export const executeWorkflow = inngest.createFunction(
 			openaiChannel(),
 			anthropicChannel(),
 			discordChannel(),
+			slackChannel(),
 		]
 	},
 	async ({ event, step, publish }) => {
