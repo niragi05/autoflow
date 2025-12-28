@@ -1,0 +1,18 @@
+"use server";
+
+import { getSubscriptionToken, type Realtime } from "@inngest/realtime";
+import { discordChannel } from "@/inngest/channels/discord";
+import { inngest } from "@/inngest/client";
+
+export type DiscordRefreshToken = Realtime.Token<typeof discordChannel, ["status"]>
+
+export async function fetchDiscordRealtimeToken(): Promise<DiscordRefreshToken> {
+    const token = await getSubscriptionToken(
+        inngest, {
+            channel: discordChannel(),
+            topics: ["status"],
+        }
+    )
+
+    return token;
+}

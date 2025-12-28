@@ -11,6 +11,7 @@ import { geminiChannel } from "./channels/gemini";
 import { openaiChannel } from "./channels/openai";
 import { anthropicChannel } from "./channels/anthropic";
 import { NonRetriableError } from "inngest";
+import { discordChannel } from "./channels/discord";
 
 export const executeWorkflow = inngest.createFunction(
 	{ 
@@ -27,6 +28,7 @@ export const executeWorkflow = inngest.createFunction(
 			geminiChannel(),
 			openaiChannel(),
 			anthropicChannel(),
+			discordChannel(),
 		]
 	},
 	async ({ event, step, publish }) => {

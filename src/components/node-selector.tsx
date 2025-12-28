@@ -61,6 +61,12 @@ const executionNodes: NodeTypeOption[] = [
         label: "Anthropic",
         description: "Uses Anthropic to generate text.",
         icon: "/logos/anthropic.svg",
+    },
+    {
+        type: NodeType.DISCORD,
+        label: "Discord",
+        description: "Uses Discord to send messages.",
+        icon: "/logos/discord.svg",
     }
 ]
 
