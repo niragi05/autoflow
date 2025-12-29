@@ -5,6 +5,7 @@ import { z } from "zod";
 import { Node, Edge } from "@xyflow/react";
 import { PAGINATION } from "@/config/constants";
 import { NodeType, CredentialType } from "@/generated/prisma/enums";
+import { encrypt } from "@/lib/encryption";
 
 export const credentialsRouter = createTRPCRouter({
     create: protectedProcedure
@@ -21,7 +22,7 @@ export const credentialsRouter = createTRPCRouter({
                     name,
                     userId: ctx.auth.user.id,
                     type,
-                    value, // TODO: Encrypt value
+                    value: encrypt(value),
                 }
             })
         }),
@@ -46,13 +47,6 @@ export const credentialsRouter = createTRPCRouter({
         }))
         .mutation(async({ ctx, input }) => {
             const { id, name, type, value } = input;
-            
-            const credential = await prisma.credential.findUniqueOrThrow({
-                where: {
-                    id,
-                    userId: ctx.auth.user.id,
-                }
-            })
 
             return prisma.credential.update({
                 where: {
@@ -62,7 +56,7 @@ export const credentialsRouter = createTRPCRouter({
                 data: {
                     name,
                     type,
-                    value, // TODO: Encrypt value
+                    value: encrypt(value),
                 }
             })
         }),
