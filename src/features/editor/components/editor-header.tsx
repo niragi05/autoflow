@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useSuspenseWorkflow, useUpdateWorkflow, useUpdateWorkflowName } from "@/features/workflows/hooks/use-workflows";
 import { editorAtom } from "../store/atoms";
 import { useAtomValue } from "jotai";
+import { NodeType } from "@/generated/prisma/enums";
 
 export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
     const editor = useAtomValue(editorAtom);
@@ -23,8 +24,18 @@ export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
 
         saveWorkflow.mutate({
             id: workflowId,
-            nodes,
-            edges,
+            nodes: nodes.map(node => ({
+                id: node.id,
+                type: node.type as NodeType,
+                position: node.position,
+                data: node.data,
+            })),
+            edges: edges.map(edge => ({
+                source: edge.source,
+                target: edge.target,
+                sourceHandle: edge.sourceHandle,
+                targetHandle: edge.targetHandle,
+            })),
         })
     }
 
