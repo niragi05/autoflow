@@ -37,6 +37,34 @@ export const RegisterForm = () => {
         }
     });
 
+    const signUpWithGithub = async () => {
+        await authClient.signIn.social({
+            provider: "github",
+        }, {
+            onSuccess: () => {
+                router.push("/");
+                toast.success("Signed up with GitHub successfully!");
+            },
+            onError: (ctx) => {
+                toast.error(ctx.error.message || "An error occurred while signing up with GitHub.");
+            }
+        })
+    }
+
+    const signUpWithGoogle = async () => {
+        await authClient.signIn.social({
+            provider: "google",
+        }, {
+            onSuccess: () => {
+                router.push("/");
+                toast.success("Signed up with Google successfully!");
+            },
+            onError: (ctx) => {
+                toast.error(ctx.error.message || "An error occurred while signing up with Google.");
+            }
+        })
+    }
+
     const onSubmit = async (values: RegisterFormValues) => {
         console.log({values});
         await authClient.signUp.email(
@@ -78,6 +106,7 @@ export const RegisterForm = () => {
                                         className="w-full"
                                         type="button"
                                         disabled={isPending}
+                                        onClick={signUpWithGithub}
                                     >
                                         <Image alt="GitHub" src="logos/github.svg" width={20} height={20} />
                                         Continue with GitHub
@@ -87,6 +116,7 @@ export const RegisterForm = () => {
                                         className="w-full"
                                         type="button"
                                         disabled={isPending}
+                                        onClick={signUpWithGoogle}
                                     >
                                         <Image alt="Google" src="logos/google.svg" width={20} height={20} />
                                         Continue with Google
