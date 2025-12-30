@@ -1,11 +1,12 @@
 "use client";
 
-import { CreditCardIcon, FolderOpenIcon, HistoryIcon, KeyIcon, LogOutIcon, StarIcon } from "lucide-react";
+import { FolderOpenIcon, HistoryIcon, KeyIcon, LogOutIcon, UserIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { useSuspenseCurrentUser } from "@/features/auth/hooks/use-current-user";
 
 const menuItems = [
     {
@@ -32,7 +33,8 @@ const menuItems = [
 
 export const AppSidebar = () => {
     const router = useRouter();
-
+    const { data: user } = useSuspenseCurrentUser();
+    
     return (
         <Sidebar collapsible="icon">
             <SidebarHeader>
@@ -106,6 +108,26 @@ export const AppSidebar = () => {
                         >
                             <LogOutIcon className="h-4 w-4" />
                             <span>Sign Out</span>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton 
+                            tooltip={user.name || user.email} 
+                            className="gap-x-4 h-10 px-4 cursor-default"
+                        >
+                            {user.image ? (
+                                <Image src={user.image} alt={user.name || user.email} width={24} height={24} className="rounded-full object-cover" />
+                            ): (
+                                <UserIcon className="size-4" />
+                            )}
+                            <span className="truncate">
+                                <div className="font-medium text-primary">
+                                    {user.name}
+                                </div>
+                                <div className="text-xs text-muted-foreground truncate">
+                                    {user.email}
+                                </div>
+                            </span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
